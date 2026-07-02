@@ -1,0 +1,3 @@
+EVT-001|Tour Los Recuerdos|04/09/2026|12;15|Estadio Olimpico|Caracas|25
+EVT-002|MORAT|04/04/2027|17:00|Estadio Olimpico|Caracas|25
+EVT-003|Los Melodicos|30/12/2026|12:00|Estadio Olimpico|Caracas|10
