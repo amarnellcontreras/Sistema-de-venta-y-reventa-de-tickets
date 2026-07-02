@@ -292,6 +292,7 @@ public class Main extends Application {
     }
 
     // --- PANEL COMPRADOR ---
+  // --- PANEL COMPRADOR ---
     private void mostrarPanelComprador(Usuario cliente) {
         VBox root = new VBox(12);
         root.setPadding(new Insets(15));
@@ -334,6 +335,10 @@ public class Main extends Application {
                 Label det = new Label("📅 " + fecha + "\n📍 " + lugar + "\n💵 Precio: $" + precio); det.setTextFill(Color.web("#8A8D9F"));
                 det.setLineSpacing(4);
 
+                // Label interno de la tarjeta para notificar al usuario de forma móvil
+                Label lblStatusCompra = new Label("");
+                lblStatusCompra.setWrapText(true);
+
                 Button btnAdquirir = new Button("COMPRAR TICKET");
                 btnAdquirir.setMaxWidth(Double.MAX_VALUE);
                 btnAdquirir.setStyle("-fx-background-color: #00D2FF; -fx-text-fill: white; -fx-font-weight: bold; -fx-min-height: 48px; -fx-background-radius: 6px; -fx-cursor: hand;");
@@ -348,13 +353,15 @@ public class Main extends Application {
                         if(escribirEnArchivo("tickets.txt", lineaTicket)) {
                             generarArchivoPdfTicket(codTck, cliente.nombre, cliente.cedula, nomEvt, fecha, lugar, hash);
                             refrescarMisTickets(contenedorMisTickets, cliente.cedula);
-                            new Alert(Alert.AlertType.INFORMATION, "¡Compra Exitosa! Tu e-Ticket ya está disponible.").showAndWait();
+                            lblStatusCompra.setText("¡Compra Exitosa! e-Ticket disponible en 'Mis Tickets'.");
+                            lblStatusCompra.setTextFill(Color.web("#39FF14"));
                         }
                     } else {
-                        new Alert(Alert.AlertType.ERROR, "Saldo insuficiente en tu billetera digital.").showAndWait();
+                        lblStatusCompra.setText("Saldo insuficiente en tu billetera.");
+                        lblStatusCompra.setTextFill(Color.web("#FF4444"));
                     }
                 });
-                cardMobil.getChildren().addAll(name, det, btnAdquirir);
+                cardMobil.getChildren().addAll(name, det, btnAdquirir, lblStatusCompra);
                 feedConciertos.getChildren().add(cardMobil);
             }
         }
@@ -372,128 +379,6 @@ public class Main extends Application {
 
         tabPane.getTabs().addAll(tabComprar, tabMisTickets);
         root.getChildren().addAll(topBar, tabPane);
-        window.setScene(new Scene(root, ANCHO_MOVIL, ALTO_MOVIL));
-    }
-
-    private void refrescarMisTickets(VBox contenedor, String cedulaCliente) {
-        contenedor.getChildren().clear();
-        List<String> tickets = leerLineasArchivo("tickets.txt");
-        for (String t : tickets) {
-            String[] datos = t.split("\\|");
-            if (datos.length >= 7 && datos[1].trim().equals(cedulaCliente.trim())) {
-                String codTck = datos[0]; String nomEvt = datos[3]; String hash = datos[5]; String estado = datos[6];
-
-                VBox cardTicket = new VBox(8);
-                cardTicket.setPadding(new Insets(12));
-                cardTicket.setStyle("-fx-background-color: #1A1D2B; -fx-background-radius: 8px; -fx-border-color: #31354A;");
-
-                Label lblNombre = new Label("🎫 " + nomEvt);
-                lblNombre.setTextFill(Color.WHITE); lblNombre.setFont(Font.font("System", FontWeight.BOLD, 14));
-                Label lblCod = new Label("ID: " + codTck + "\nEstado: " + estado);
-                lblCod.setTextFill(estado.equalsIgnoreCase("ACTIVO") ? Color.web("#39FF14") : Color.web("#8A8D9F"));
-
-                Button btnDescargarCopia = new Button("📥 DESCARGAR PDF");
-                btnDescargarCopia.setMaxWidth(Double.MAX_VALUE);
-                btnDescargarCopia.setStyle("-fx-background-color: transparent; -fx-text-fill: #00D2FF; -fx-border-color: #00D2FF; -fx-border-radius: 6px; -fx-min-height: 38px;");
-                btnDescargarCopia.setOnAction(e -> {
-                    generarArchivoPdfTicket(codTck, "Usuario Sistema", cedulaCliente, nomEvt, "Ver Cartelera", "Local Ajustado", hash);
-                });
-
-                cardTicket.getChildren().addAll(lblNombre, lblCod, btnDescargarCopia);
-                contenedor.getChildren().add(cardTicket);
-            }
-        }
-    }
-
-    // --- PANTALLA 4: CONTROL DE ACCESO ---
-    private void mostrarPanelPortero(Usuario portero) {
-        VBox root = new VBox(20);
-        root.setPadding(new Insets(25));
-        root.setAlignment(Pos.TOP_CENTER);
-        root.setStyle("-fx-background-color: #0D0E15;");
-
-        VBox cabecera = new VBox(5);
-        cabecera.setAlignment(Pos.CENTER);
-        Label lblTitulo = new Label("VALIDACIÓN DE ACCESO");
-        lblTitulo.setFont(Font.font("System", FontWeight.BOLD, 20));
-        lblTitulo.setTextFill(Color.WHITE);
-        Label lblSub = new Label("Operador de Puerta: " + portero.nombre);
-        lblSub.setTextFill(Color.web("#8A8D9F"));
-        lblSub.setFont(Font.font("System", 13));
-        cabecera.getChildren().addAll(lblTitulo, lblSub);
-
-        VBox bloqueControl = new VBox(12);
-        bloqueControl.setPadding(new Insets(20));
-        bloqueControl.setStyle("-fx-background-color: #1A1D2B; -fx-background-radius: 12px; -fx-border-color: #31354A;");
-        bloqueControl.setAlignment(Pos.CENTER);
-
-        Label lblPrompt = new Label("Escanear o ingresar ID de Ticket:");
-        lblPrompt.setTextFill(Color.web("#FFFFFF"));
-        lblPrompt.setFont(Font.font("System", FontWeight.BOLD, 14));
-
-        TextField txtIdTicket = new TextField();
-        txtIdTicket.setPromptText("Ej: TCK-12345");
-        txtIdTicket.setAlignment(Pos.CENTER);
-        txtIdTicket.setFont(Font.font("System", 18)); 
-        txtIdTicket.setStyle("-fx-background-color: #0D0E15; -fx-text-fill: #FFF; -fx-prompt-text-fill: #55728F; -fx-border-color: #00D2FF; -fx-border-radius: 6px; -fx-padding: 12px;");
-
-        Button btnVerificar = new Button("🔒 VERIFICAR E-TICKET");
-        btnVerificar.setMaxWidth(Double.MAX_VALUE);
-        btnVerificar.setFont(Font.font("System", FontWeight.BOLD, 14));
-        btnVerificar.setStyle("-fx-background-color: #00D2FF; -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 6px; -fx-padding: 14px;");
-
-        bloqueControl.getChildren().addAll(lblPrompt, txtIdTicket, btnVerificar);
-
-        StackPane contenedorResultado = new StackPane();
-        contenedorResultado.setPadding(new Insets(20));
-        contenedorResultado.setStyle("-fx-background-color: #1A1D2B; -fx-background-radius: 8px; -fx-border-color: #31354A;");
-        VBox.setVgrow(contenedorResultado, Priority.ALWAYS);
-
-        Label lblResultado = new Label("Esperando lectura de e-Ticket...");
-        lblResultado.setFont(Font.font("System", FontWeight.BOLD, 16));
-        lblResultado.setTextFill(Color.web("#8A8D9F"));
-        lblResultado.setWrapText(true);
-        lblResultado.setAlignment(Pos.CENTER);
-        contenedorResultado.getChildren().add(lblResultado);
-
-        btnVerificar.setOnAction(e -> {
-            String id = txtIdTicket.getText().trim();
-            if (id.isEmpty()) {
-                lblResultado.setText("⚠️ INGRESE UN IDENTIFICADOR VÁLIDO");
-                lblResultado.setTextFill(Color.ORANGE);
-                contenedorResultado.setStyle("-fx-background-color: #1A1D2B; -fx-border-color: orange; -fx-background-radius: 8px;");
-                return;
-            }
-
-            String estado = verificarLegalidadTicket(id);
-
-            switch (estado) {
-                case "VALIDO":
-                    lblResultado.setText("✅ ACCESO CONCEDIDO\n\nTicket Válido\n¡Disfrute del Espectáculo!");
-                    lblResultado.setTextFill(Color.web("#39FF14")); 
-                    contenedorResultado.setStyle("-fx-background-color: #1A1D2B; -fx-border-color: #39FF14; -fx-border-width: 2px; -fx-background-radius: 8px;");
-                    marcarTicketComoUsado(id);
-                    break;
-                case "USADO":
-                    lblResultado.setText("❌ ACCESO DENEGADO\n\n¡ALERTA DE FRAUDE!\nEste ticket ya cruzó la puerta.");
-                    lblResultado.setTextFill(Color.web("#FF4444"));
-                    contenedorResultado.setStyle("-fx-background-color: #1A1D2B; -fx-border-color: #FF4444; -fx-border-width: 2px; -fx-background-radius: 8px;");
-                    break;
-                default:
-                    lblResultado.setText("🚨 ACCESO RECHAZADO\n\nTicket Inexistente o Modificado.");
-                    lblResultado.setTextFill(Color.web("#FF4444"));
-                    contenedorResultado.setStyle("-fx-background-color: #1A1D2B; -fx-border-color: #FF4444; -fx-border-width: 2px; -fx-background-radius: 8px;");
-                    break;
-            }
-            txtIdTicket.clear();
-        });
-
-        Button btnLogout = new Button("CERRAR SESIÓN");
-        btnLogout.setMaxWidth(Double.MAX_VALUE);
-        btnLogout.setStyle("-fx-background-color: transparent; -fx-text-fill: #8A8D9F; -fx-border-color: #31354A; -fx-border-radius: 6px; -fx-min-height: 44px;");
-        btnLogout.setOnAction(e -> mostrarLogin());
-
-        root.getChildren().addAll(cabecera, bloqueControl, contenedorResultado, btnLogout);
         window.setScene(new Scene(root, ANCHO_MOVIL, ALTO_MOVIL));
     }
 
