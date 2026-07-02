@@ -125,7 +125,7 @@ public class Main extends Application {
         tarjetaLogin.getChildren().addAll(lblTitulo, boxCorreo, boxClave, btnIngresar, btnIrRegistro, lblMensaje);
         root.getChildren().add(tarjetaLogin);
         window.setScene(new Scene(root, ANCHO_MOVIL, ALTO_MOVIL));
-        window.setTitle("Ticketmaster - Mobile Login");
+        window.setTitle("Ticketmaster");
         window.show();
     }
 
@@ -207,7 +207,7 @@ public class Main extends Application {
         HBox topBar = new HBox(10);
         topBar.setAlignment(Pos.CENTER_LEFT);
         Label lblInfo = new Label("Admin: " + admin.nombre);
-        lblInfo.setTextFill(Color.web("#FFFFFF"));
+        lblInfo.setTextFill(Color.white());
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
         Button btnLogout = new Button("SALIR");
@@ -215,27 +215,28 @@ public class Main extends Application {
         btnLogout.setOnAction(e -> mostrarLogin());
         topBar.getChildren().addAll(lblInfo, spacer, btnLogout);
 
-        TabPane tabPane = new TabPane();
-        tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
-        tabPane.setStyle("-fx-background-color: #0D0E15;");
-        VBox.setVgrow(tabPane, Priority.ALWAYS);
+        VBox contenedorContenido = new VBox(10);
+        VBox.setVgrow(contenedorContenido, Priority.ALWAYS);
 
-        // TAB 1: ARTISTAS
-        Tab tabArtista = new Tab("Artistas");
+        // FORMULARIO INTEGRADO (MÓVIL FRIENDLY)
         VBox formArtista = new VBox(10);
-        formArtista.setPadding(new Insets(15));
-        formArtista.setStyle("-fx-background-color: #1A1D2B;");
+        formArtista.setPadding(new Insets(10));
+        formArtista.setStyle("-fx-background-color: #1A1D2B; -fx-background-radius: 8px;");
+        Label lblSeccionArt = new Label("Registrar Artistas");
+        lblSeccionArt.setTextFill(Color.web("#00D2FF"));
         TextField txtCodArtista = crearCampo("Código:", formArtista, "ART-001");
         TextField txtNomArtista = crearCampo("Nombre:", formArtista, "Los Pixels");
         TextField txtManager = crearCampo("Mánager:", formArtista, "Manager S.A.");
+        
         TextArea txtAreaArtistas = new TextArea();
         txtAreaArtistas.setEditable(false);
-        txtAreaArtistas.setPrefHeight(120);
+        txtAreaArtistas.setPrefHeight(80);
         txtAreaArtistas.setStyle("-fx-control-inner-background: #0D0E15; -fx-text-fill: #FFFFFF;");
         actualizarAuditoria(txtAreaArtistas, "artistas.txt");
+        
         Button btnGuardarArtista = new Button("REGISTRAR ARTISTA");
         btnGuardarArtista.setMaxWidth(Double.MAX_VALUE);
-        btnGuardarArtista.setStyle("-fx-background-color: #00D2FF; -fx-text-fill: white; -fx-font-weight: bold; -fx-min-height: 44px;");
+        btnGuardarArtista.setStyle("-fx-background-color: #00D2FF; -fx-text-fill: white; -fx-font-weight: bold; -fx-min-height: 40px;");
         btnGuardarArtista.setOnAction(e -> {
             if(txtCodArtista.getText().isEmpty() || txtNomArtista.getText().isEmpty()) return;
             String linea = txtCodArtista.getText().trim() + "|" + txtNomArtista.getText().trim() + "|" + txtManager.getText().trim();
@@ -245,54 +246,16 @@ public class Main extends Application {
             }
         });
         formArtista.getChildren().addAll(btnGuardarArtista, txtAreaArtistas);
-        
-        ScrollPane spArt = new ScrollPane(formArtista);
-        spArt.setFitToWidth(true); spArt.setStyle("-fx-background-color: transparent; -fx-background: #1A1D2B;");
-        tabArtista.setContent(spArt);
 
-        // TAB 2: CONCIERTOS
-        Tab tabConcierto = new Tab("Conciertos");
-        VBox formConcierto = new VBox(8);
-        formConcierto.setPadding(new Insets(15));
-        formConcierto.setStyle("-fx-background-color: #1A1D2B;");
-        TextField txtCodEvento = crearCampo("Código Evento:", formConcierto, "EVT-100");
-        TextField txtNomEvento = crearCampo("Nombre:", formConcierto, "Tour Gran Reserva"); 
-        TextField txtFecha = crearCampo("Fecha:", formConcierto, "29/06/2026");
-        TextField txtHora = crearCampo("Hora:", formConcierto, "17:00 PM");
-        TextField txtRecinto = crearCampo("Recinto:", formConcierto, "Estadio Olímpico");
-        TextField txtCiudad = crearCampo("Ciudad:", formConcierto, "Caracas");
-        TextField txtAforo = crearCampo("Precio ($):", formConcierto, "45.00");
-        TextArea txtAreaConciertos = new TextArea();
-        txtAreaConciertos.setEditable(false);
-        txtAreaConciertos.setPrefHeight(120);
-        txtAreaConciertos.setStyle("-fx-control-inner-background: #0D0E15; -fx-text-fill: #FFFFFF;");
-        actualizarAuditoria(txtAreaConciertos, "conciertos.txt");
-        Button btnGuardarConcierto = new Button("CREAR CONCIERTO");
-        btnGuardarConcierto.setMaxWidth(Double.MAX_VALUE);
-        btnGuardarConcierto.setStyle("-fx-background-color: #00D2FF; -fx-text-fill: white; -fx-font-weight: bold; -fx-min-height: 44px;");
-        btnGuardarConcierto.setOnAction(e -> {
-            if(txtCodEvento.getText().isEmpty() || txtNomEvento.getText().isEmpty() || txtAforo.getText().isEmpty()) return;
-            String linea = txtCodEvento.getText().trim() + "|" + txtNomEvento.getText().trim() + "|" + 
-                           txtFecha.getText().trim() + "|" + txtHora.getText().trim() + "|" + 
-                           txtRecinto.getText().trim() + "|" + txtCiudad.getText().trim() + "|" + txtAforo.getText().trim();
-            if(escribirEnArchivo("conciertos.txt", linea)) {
-                txtCodEvento.clear(); txtNomEvento.clear(); txtFecha.clear(); txtHora.clear(); txtRecinto.clear(); txtCiudad.clear(); txtAforo.clear();
-                actualizarAuditoria(txtAreaConciertos, "conciertos.txt");
-            }
-        });
-        formConcierto.getChildren().addAll(btnGuardarConcierto, txtAreaConciertos);
-        
-        ScrollPane spConc = new ScrollPane(formConcierto);
-        spConc.setFitToWidth(true); spConc.setStyle("-fx-background-color: transparent; -fx-background: #1A1D2B;");
-        tabConcierto.setContent(spConc);
+        ScrollPane mainScroll = new ScrollPane(formArtista);
+        mainScroll.setFitToWidth(true);
+        mainScroll.setStyle("-fx-background-color: transparent; -fx-background: #0D0E15;");
 
-        tabPane.getTabs().addAll(tabArtista, tabConcierto);
-        root.getChildren().addAll(topBar, tabPane);
+        root.getChildren().addAll(topBar, mainScroll);
         window.setScene(new Scene(root, ANCHO_MOVIL, ALTO_MOVIL));
     }
 
     // --- PANEL COMPRADOR ---
-  // --- PANEL COMPRADOR ---
     private void mostrarPanelComprador(Usuario cliente) {
         VBox root = new VBox(12);
         root.setPadding(new Insets(15));
@@ -306,19 +269,13 @@ public class Main extends Application {
         lblSaldo.setTextFill(Color.web("#39FF14")); 
         Region spacer = new Region(); HBox.setHgrow(spacer, Priority.ALWAYS);
         Button btnLogout = new Button("SALIR");
-        btnLogout.setStyle("-fx-background-color: transparent; -fx-text-fill: #FF4444;");
+        btnLogout.setStyle("-fx-background-color: transparent; -fx-text-fill: #FF4444行业;");
         btnLogout.setOnAction(e -> mostrarLogin());
         topBar.getChildren().addAll(lblInfo, lblSaldo, spacer, btnLogout);
 
-        TabPane tabPane = new TabPane();
-        tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
-        VBox.setVgrow(tabPane, Priority.ALWAYS);
-
-        Tab tabComprar = new Tab("Eventos");
         VBox feedConciertos = new VBox(14); 
         feedConciertos.setPadding(new Insets(12));
         feedConciertos.setStyle("-fx-background-color: #0D0E15;");
-        VBox contenedorMisTickets = new VBox(10);
 
         List<String> conciertos = leerLineasArchivo("conciertos.txt");
         for (String linea : conciertos) {
@@ -329,35 +286,32 @@ public class Main extends Application {
 
                 VBox cardMobil = new VBox(10);
                 cardMobil.setPadding(new Insets(15));
-                cardMobil.setStyle("-fx-background-color: #1A1D2B; -fx-background-radius: 10px; -fx-border-color: #31354A; -fx-border-width: 1px;");
+                cardMobil.setStyle("-fx-background-color: #1A1D2B; -fx-background-radius: 10px; -fx-border-color: #31354A;");
 
                 Label name = new Label(nomEvt); name.setTextFill(Color.WHITE); name.setFont(Font.font("System", FontWeight.BOLD, 16));
                 Label det = new Label("📅 " + fecha + "\n📍 " + lugar + "\n💵 Precio: $" + precio); det.setTextFill(Color.web("#8A8D9F"));
-                det.setLineSpacing(4);
 
-                // Label interno de la tarjeta para notificar al usuario de forma móvil
                 Label lblStatusCompra = new Label("");
                 lblStatusCompra.setWrapText(true);
 
                 Button btnAdquirir = new Button("COMPRAR TICKET");
                 btnAdquirir.setMaxWidth(Double.MAX_VALUE);
-                btnAdquirir.setStyle("-fx-background-color: #00D2FF; -fx-text-fill: white; -fx-font-weight: bold; -fx-min-height: 48px; -fx-background-radius: 6px; -fx-cursor: hand;");
+                btnAdquirir.setStyle("-fx-background-color: #00D2FF; -fx-text-fill: white; -fx-font-weight: bold; -fx-min-height: 44px;");
 
                 btnAdquirir.setOnAction(e -> {
                     if (saldoBilletera >= precio) {
                         saldoBilletera -= precio;
                         lblSaldo.setText(String.format("Saldo: $%.2f", saldoBilletera));
-                        String hash = generarSHA256(cliente.cedula + codEvt + System.currentTimeMillis());
+                        String hash = generarSHA256(cliente.cedula + codEvt + "SECURE_SALT");
                         String codTck = "TCK-" + (int)(Math.random() * 90000 + 10000);
                         String lineaTicket = codTck + "|" + cliente.cedula + "|" + codEvt + "|" + nomEvt + "|" + precio + "|" + hash + "|ACTIVO";
                         if(escribirEnArchivo("tickets.txt", lineaTicket)) {
                             generarArchivoPdfTicket(codTck, cliente.nombre, cliente.cedula, nomEvt, fecha, lugar, hash);
-                            refrescarMisTickets(contenedorMisTickets, cliente.cedula);
-                            lblStatusCompra.setText("¡Compra Exitosa! e-Ticket disponible en 'Mis Tickets'.");
+                            lblStatusCompra.setText("¡Compra Exitosa! Ticket Guardado.");
                             lblStatusCompra.setTextFill(Color.web("#39FF14"));
                         }
                     } else {
-                        lblStatusCompra.setText("Saldo insuficiente en tu billetera.");
+                        lblStatusCompra.setText("Saldo insuficiente.");
                         lblStatusCompra.setTextFill(Color.web("#FF4444"));
                     }
                 });
@@ -367,33 +321,85 @@ public class Main extends Application {
         }
         ScrollPane spFeed = new ScrollPane(feedConciertos);
         spFeed.setFitToWidth(true); spFeed.setStyle("-fx-background-color: transparent; -fx-background: #0D0E15;");
-        tabComprar.setContent(spFeed);
 
-        Tab tabMisTickets = new Tab("Mis Tickets");
-        contenedorMisTickets.setPadding(new Insets(12));
-        contenedorMisTickets.setStyle("-fx-background-color: #0D0E15;");
-        refrescarMisTickets(contenedorMisTickets, cliente.cedula);
-        ScrollPane spTck = new ScrollPane(contenedorMisTickets);
-        spTck.setFitToWidth(true); spTck.setStyle("-fx-background-color: transparent; -fx-background: #0D0E15;");
-        tabMisTickets.setContent(spTck);
-
-        tabPane.getTabs().addAll(tabComprar, tabMisTickets);
-        root.getChildren().addAll(topBar, tabPane);
+        root.getChildren().addAll(topBar, spFeed);
         window.setScene(new Scene(root, ANCHO_MOVIL, ALTO_MOVIL));
     }
 
-    // --- LÓGICA ANTIFRAUDE ---
+    // --- PANTALLA 4: CONTROL DE ACCESO ---
+    private void mostrarPanelPortero(Usuario portero) {
+        VBox root = new VBox(20);
+        root.setPadding(new Insets(25));
+        root.setAlignment(Pos.TOP_CENTER);
+        root.setStyle("-fx-background-color: #0D0E15;");
+
+        VBox cabecera = new VBox(5);
+        cabecera.setAlignment(Pos.CENTER);
+        Label lblTitulo = new Label("VALIDACIÓN DE ACCESO");
+        lblTitulo.setFont(Font.font("System", FontWeight.BOLD, 20));
+        lblTitulo.setTextFill(Color.WHITE);
+        Label lblSub = new Label("Portero: " + portero.nombre);
+        lblSub.setTextFill(Color.web("#8A8D9F"));
+        cabecera.getChildren().addAll(lblTitulo, lblSub);
+
+        VBox bloqueControl = new VBox(12);
+        bloqueControl.setPadding(new Insets(20));
+        bloqueControl.setStyle("-fx-background-color: #1A1D2B; -fx-background-radius: 12px;");
+
+        TextField txtIdTicket = new TextField();
+        txtIdTicket.setPromptText("Ej: TCK-12345");
+        txtIdTicket.setAlignment(Pos.CENTER);
+        txtIdTicket.setStyle("-fx-background-color: #0D0E15; -fx-text-fill: #FFF; -fx-border-color: #00D2FF; -fx-padding: 12px;");
+
+        Button btnVerificar = new Button("🔒 VERIFICAR E-TICKET");
+        btnVerificar.setMaxWidth(Double.MAX_VALUE);
+        btnVerificar.setStyle("-fx-background-color: #00D2FF; -fx-text-fill: white; -fx-padding: 14px;");
+
+        bloqueControl.getChildren().addAll(txtIdTicket, btnVerificar);
+
+        StackPane contenedorResultado = new StackPane();
+        contenedorResultado.setPadding(new Insets(20));
+        contenedorResultado.setStyle("-fx-background-color: #1A1D2B;");
+
+        Label lblResultado = new Label("Esperando lectura...");
+        lblResultado.setTextFill(Color.web("#8A8D9F"));
+        contenedorResultado.getChildren().add(lblResultado);
+
+        btnVerificar.setOnAction(e -> {
+            String id = txtIdTicket.getText().trim();
+            if (id.isEmpty()) {
+                lblResultado.setText("⚠️ INGRESE UN ID");
+                return;
+            }
+
+            String estado = verificarLegalidadTicket(id);
+            if (estado.equals("VALIDO")) {
+                lblResultado.setText("✅ ACCESO CONCEDIDO");
+                lblResultado.setTextFill(Color.web("#39FF14"));
+                marcarTicketComoUsado(id);
+            } else {
+                lblResultado.setText("❌ ACCESO DENEGADO");
+                lblResultado.setTextFill(Color.web("#FF4444"));
+            }
+            txtIdTicket.clear();
+        });
+
+        Button btnLogout = new Button("CERRAR SESIÓN");
+        btnLogout.setMaxWidth(Double.MAX_VALUE);
+        btnLogout.setStyle("-fx-background-color: transparent; -fx-text-fill: #8A8D9F; -fx-border-color: #31354A;");
+        btnLogout.setOnAction(e -> mostrarLogin());
+
+        root.getChildren().addAll(cabecera, bloqueControl, contenedorResultado, btnLogout);
+        window.setScene(new Scene(root, ANCHO_MOVIL, ALTO_MOVIL));
+    }
+
     private String verificarLegalidadTicket(String idTicket) {
         List<String> lineas = leerLineasArchivo("tickets.txt");
         for (String linea : lineas) {
             String[] datos = linea.split("\\|");
             if (datos.length >= 7 && datos[0].trim().equalsIgnoreCase(idTicket)) {
-                String estado = datos[6].trim();
-                if (estado.equalsIgnoreCase("ACTIVO")) {
-                    return "VALIDO";
-                } else {
-                    return "USADO";
-                }
+                if (datos[6].trim().equalsIgnoreCase("ACTIVO")) return "VALIDO";
+                else return "USADO";
             }
         }
         return "FALSO";
@@ -402,22 +408,15 @@ public class Main extends Application {
     private void marcarTicketComoUsado(String idTicket) {
         List<String> lineas = leerLineasArchivo("tickets.txt");
         StringBuilder nuevoContenido = new StringBuilder();
-
         for (String linea : lineas) {
             String[] datos = linea.split("\\|");
             if (datos.length >= 7 && datos[0].trim().equalsIgnoreCase(idTicket)) {
-                nuevoContenido.append(datos[0]).append("|")
-                              .append(datos[1]).append("|")
-                              .append(datos[2]).append("|")
-                              .append(datos[3]).append("|")
-                              .append(datos[4]).append("|")
-                              .append(datos[5]).append("|")
-                              .append("USADO\n");
+                nuevoContenido.append(datos[0]).append("|").append(datos[1]).append("|").append(datos[2]).append("|")
+                              .append(datos[3]).append("|").append(datos[4]).append("|").append(datos[5]).append("|USADO\n");
             } else {
                 nuevoContenido.append(linea).append("\n");
             }
         }
-
         try (FileWriter fw = new FileWriter("tickets.txt")) {
             fw.write(nuevoContenido.toString());
         } catch (IOException e) { }
@@ -429,14 +428,12 @@ public class Main extends Application {
             bw.write("=========================================================\n");
             bw.write("            TICKETMASTER DIGITAL COMPROBANTE             \n");
             bw.write("=========================================================\n");
-            bw.write(" CÓDIGO ÚNICO DE ACCESO: " + codTck + "\n");
+            bw.write(" CODIGO UNICO: " + codTck + "\n");
             bw.write(" EVENTO: " + concierto + "\n");
-            bw.write(" FIRMA DIGITAL DE SEGURIDAD: " + hash + "\n");
-            bw.write("=========================================================\n");
+            bw.write(" SECURITY HASH: " + hash + "\n");
         } catch (IOException e) { }
     }
 
-    // --- AUXILIARES ---
     private void actualizarAuditoria(TextArea area, String archivo) {
         area.clear();
         List<String> lineas = leerLineasArchivo(archivo);
@@ -446,7 +443,7 @@ public class Main extends Application {
     private TextField crearCampo(String titulo, VBox contenedor, String placeholder) {
         Label lbl = new Label(titulo); lbl.setTextFill(Color.web("#8A8D9F"));
         TextField txt = new TextField(); txt.setPromptText(placeholder);
-        txt.setStyle("-fx-background-color: #0D0E15; -fx-text-fill: #FFFFFF; -fx-prompt-text-fill: #8A8D9F; -fx-border-color: #31354A; -fx-border-radius: 6px; -fx-padding: 8px;");
+        txt.setStyle("-fx-background-color: #0D0E15; -fx-text-fill: #FFFFFF; -fx-border-color: #31354A; -fx-padding: 8px;");
         contenedor.getChildren().addAll(lbl, txt);
         return txt;
     }
