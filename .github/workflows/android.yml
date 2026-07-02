@@ -22,6 +22,12 @@ jobs:
     - name: Configurar el Android SDK
       uses: android-actions/setup-android@v3
 
+    - name: Forzar e Instalar Maven 3.8.8
+      run: |
+        wget https://archive.apache.org/dist/maven/maven-3/3.8.8/binaries/apache-maven-3.8.8-bin.tar.gz
+        tar -xzf apache-maven-3.8.8-bin.tar.gz
+        echo "$GITHUB_WORKSPACE/apache-maven-3.8.8/bin" >> $GITHUB_PATH
+
     - name: Compilar Clases de la Ticketera
       run: |
         mvn clean compile
