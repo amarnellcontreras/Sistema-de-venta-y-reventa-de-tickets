@@ -22,12 +22,19 @@ jobs:
     - name: Configurar el Android SDK
       uses: android-actions/setup-android@v3
 
-    - name: Compilar y Empaquetar APK con GluonFX
+    - name: Compilar Clases de la Ticketera
       run: |
-        mvn gluonfx:compile gluonfx:package
+        mvn clean compile
 
-    - name: Subir el APK generado como Artefacto
+    - name: Generar Paquete de Distribución Android
+      run: |
+        mvn gluonfx:compile gluonfx:package -Dgluonfx.target=android
+
+    - name: Subir APK de Ticketmaster Generado
+      if: always()
       uses: actions/upload-artifact@v4
       with:
         name: app-ticketmaster-android
-        path: target/gluonfx/android/*.apk
+        path: |
+          target/gluonfx/android/*.apk
+          target/*.jar
