@@ -1,5 +1,0 @@
-11111111|Admin Principal|admin@ticketera.com|admin123|ADMINISTRADOR
-22222222|Carlos Perez|carlos@mail.com|clave123|COMPRADOR
-33333333|Juan Validador|juan@puerta.com|puerta123|PERSONAL_PUERTA
-31944321|Amarnell Contreras|amarnell@gmail.com|amar123|COMPRADOR
-44444444|portero|portero@ticketera.com|1234|PERSONAL_PUERTA
