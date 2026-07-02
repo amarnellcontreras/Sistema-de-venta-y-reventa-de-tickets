@@ -11,7 +11,7 @@ jobs:
 
     steps:
     - name: Cargar el código fuente
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Configurar Java 17 con GraalVM
       uses: graalvm/setup-graalvm@v1
@@ -20,14 +20,14 @@ jobs:
         distribution: 'graalvm'
 
     - name: Configurar el Android SDK
-      uses: android-actions/setup-android@v2
+      uses: android-actions/setup-android@v3
 
     - name: Compilar y Empaquetar APK con GluonFX
       run: |
         mvn gluonfx:compile gluonfx:package
 
     - name: Subir el APK generado como Artefacto
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: app-ticketmaster-android
         path: target/gluonfx/android/*.apk
