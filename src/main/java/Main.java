@@ -207,11 +207,11 @@ public class Main extends Application {
         HBox topBar = new HBox(10);
         topBar.setAlignment(Pos.CENTER_LEFT);
         Label lblInfo = new Label("Admin: " + admin.nombre);
-        lblInfo.setTextFill(Color.white());
+        lblInfo.setTextFill(Color.WHITE);
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
         Button btnLogout = new Button("SALIR");
-        btnLogout.setStyle("-fx-background-color: transparent; -fx-text-fill: #FF4444; -fx-border-color: #FF4444; -fx-border-radius: 4px;");
+        btnLogout.setStyle("-fx-background-color: transparent; -fx-text-fill: #FF4444;");
         btnLogout.setOnAction(e -> mostrarLogin());
         topBar.getChildren().addAll(lblInfo, spacer, btnLogout);
 
